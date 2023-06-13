@@ -40,10 +40,10 @@ func (r *AuthPostgres) Update(userId int, input model.UpdateUserInput) error {
 	return err
 }
 
-func (r *AuthPostgres) RndSave(verifyCode string, number string, user model.User) (int, error) {
+func (r *AuthPostgres) RndSave(verifyCode int, number string, user model.User) (int, error) {
 	var id int
 	query := fmt.Sprintf("INSERT INTO %s (sms) VALUES ($1) WHERE number =$2 RETURNING id", userTable)
-	row := r.db.QueryRow(query, user.SMS, user.Number)
+	row := r.db.QueryRow(query, verifyCode, number)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
@@ -51,10 +51,10 @@ func (r *AuthPostgres) RndSave(verifyCode string, number string, user model.User
 	return id, nil
 }
 
-func (r *AuthPostgres) SmsCheck(verifyCode string, number string, user model.User) error {
-	var storedCode string
+func (r *AuthPostgres) SmsCheck(verifyCode int, number string, user model.User) error {
+	var storedCode int
 	query := fmt.Sprintf("SELECT sms FROM %s WHERE number = $1", userTable)
-	err := r.db.Get(&storedCode, query, user.Number)
+	err := r.db.Get(&storedCode, query, number)
 	if err != nil {
 		return err
 	}

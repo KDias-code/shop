@@ -87,6 +87,6 @@ func (s *AuthService) RndSave(verifyCode int, number string, user model.User) (i
 	return s.repo.RndSave(verifyCode, number, user)
 }
 
-func (s *AuthService) SmsCheck(verifyCode string, number string, user model.User) error {
+func (s *AuthService) SmsCheck(verifyCode int, number string, user model.User) error {
 	return s.repo.SmsCheck(verifyCode, number, user)
 }

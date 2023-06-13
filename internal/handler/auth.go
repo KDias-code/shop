@@ -96,6 +96,7 @@ func (h *Handler) Sms(w http.ResponseWriter, r *http.Request) {
 
 	rand.NewSource(time.Now().UnixNano())
 	verificationCode := rand.Intn(9000) + 1000
+	h.services.Authorization.RndSave(verificationCode, recipient, input)
 
 	message := fmt.Sprintf("Your verification code is: %s", verificationCode)
 
@@ -121,10 +122,13 @@ func (h *Handler) Sms(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Failed to read the API response.")
 		return
 	}
-	result := string(body)
-	if result == "OK" {
-		fmt.Println("SMS sent successfully!")
-	} else {
-		fmt.Printf("SMS sending failed. Error: %s\n", result)
+	if h.services.Authorization.SmsCheck(verificationCode, recipient, input) != nil {
+		result := string(body)
+		if result == "OK" {
+			fmt.Println("SMS sent successfully!")
+		} else {
+			fmt.Printf("SMS sending failed. Error: %s\n", result)
+		}
 	}
+
 }
