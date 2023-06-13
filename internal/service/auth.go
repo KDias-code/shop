@@ -35,8 +35,8 @@ func (s *AuthService) CreateUser(user model.User) (int, error) {
 	return s.repo.CreateUser(user)
 }
 
-func (s *AuthService) GenerateToken(username, password string) (string, error) {
-	user, err := s.repo.GetUser(username, generatePasswordHash(password))
+func (s *AuthService) GenerateToken(number, password string) (string, error) {
+	user, err := s.repo.GetUser(number, generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +46,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 			ExpiresAt: time.Now().Add(tokenTTl).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
-		user.Id,
+		user.ID,
 	})
 
 	return token.SignedString([]byte(signKey))
@@ -77,4 +77,16 @@ func generatePasswordHash(password string) string {
 	hash.Write([]byte(password))
 
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+}
+
+func (s *AuthService) Update(userId int, input model.UpdateUserInput) error {
+	return s.repo.Update(userId, input)
+}
+
+func (s *AuthService) RndSave(verifyCode int, number string, user model.User) (int, error) {
+	return s.repo.RndSave(verifyCode, number, user)
+}
+
+func (s *AuthService) SmsCheck(verifyCode string, number string, user model.User) error {
+	return s.repo.SmsCheck(verifyCode, number, user)
 }

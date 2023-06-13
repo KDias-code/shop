@@ -3,7 +3,9 @@ package handler
 import (
 	"context"
 	"errors"
+	"github.com/go-chi/chi/v5"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -37,10 +39,11 @@ func (h *Handler) userIdentity(next http.Handler) http.Handler {
 	})
 }
 
-func getUserId(r *http.Request) (int, error) {
-	id, ok := r.Context().Value(userCtx).(int)
-	if !ok {
-		return 0, errors.New("user id not found")
+func (h *Handler) getUserId(r *http.Request) (int, error) {
+	idParam := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		return 0, errors.New("invalid user id")
 	}
 
 	return id, nil

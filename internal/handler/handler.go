@@ -17,9 +17,11 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() http.Handler {
 	router := chi.NewRouter()
 
-	router.Route("/auth", func(r chi.Router) {
+	router.Route("/api", func(r chi.Router) {
 		r.Post("/sign-up", h.SignUp)
 		r.Post("/sign-in", h.SignIn)
+		r.Post("/send-sms", h.Sms)
+		r.Put("/{id}", h.Otps)
 	})
 
 	return router
